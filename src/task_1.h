@@ -288,6 +288,43 @@ public:
         root->color = BLACK;
         insertFix(z);
     }
+    void insert3(int key){
+        if (root == nil){
+            root->data=key;
+            root->color = BLACK;
+            root->left = nil;
+            root->right = nil;
+        }
+        Node* z = new Node(key);
+        Node* y = nil;
+        Node* x = root;
+
+        while (x != nil) {
+            y = x;
+            if (z->data > x->data) {
+                x = x->left;
+            } else {
+                x = x->right;
+            }
+        }
+
+        z->parent = y;
+
+        if (y == nil) {
+            root = z;
+        } else if (z->data > y->data) {
+            y->left = z;
+        } else {
+            y->right = z;
+        }
+
+        z->left = nil;
+        z->right = nil;
+        z->color = RED;
+        root->color = BLACK;
+        insertFix(z);
+    }
+
     void printTree() const{
         printTree(root);
     }
