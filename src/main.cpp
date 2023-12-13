@@ -8,15 +8,30 @@
 #include "task_1.h"
 
 int main() {
-    std::cout << "Task 1" << std::endl;
+    cout << "Task 1" << endl;
+    RedBlackTree* RBtree1 = new RedBlackTree();
     // call for task 1
-    std::cout << "Task 2" << std::endl;
+    int N;
+    cout << "Enter the number of nodes (N): ";
+    cin >> N;
+
+    cout << "Enter the values of nodes:" << endl;
+    for (int i = 0; i < N; i++) {
+        int value;
+        cin >> value;
+        RBtree1->insert1(value);
+    }
+
+    cout << "Red-Black Tree:" << endl;
+    RBtree1->printTree();
+    cout<<endl;
+    cout << "Task 2" << endl;
     // call for task 2
-    std::cout << "Task 3" << std::endl;
+    cout << "Task 3" << endl;
     // call for task 3
-    std::cout << "Task 4" << std::endl;
+    cout << "Task 4" << endl;
     // call for task 4
-    std::cout << "Task 5" << std::endl;
+    cout << "Task 5" << endl;
     // call for task 5
     return 0;
 }
