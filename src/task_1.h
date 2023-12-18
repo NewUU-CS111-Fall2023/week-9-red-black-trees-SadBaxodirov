@@ -13,17 +13,16 @@ public:
     Node* parent;
     Node* left;
     Node* right;
-
     Node(int val, Color col = RED, Node* par = nullptr, Node* l = nullptr, Node* r = nullptr)
             : data(val), color(col), parent(par), left(l), right(r) {}
 };
 
 class RedBlackTree {
+public:
 private:
     Node* root;
     Node* nil; // Sentinel node
-
-    void leftRotate(Node* x){
+    void leftRotate(Node* x){// Big O(1), no recursive calls, no loops so only fixed amount of operations
         Node* y = x->right;
         x->right = y->left;
         if (y->left != nil) {
@@ -40,7 +39,7 @@ private:
         y->left = x;
         x->parent = y;
     }
-    void rightRotate(Node* y){
+    void rightRotate(Node* y){// Big O(1), no recursive calls, no loops so only fixed amount of operations
         Node* x = y->left;
         y->left = x->right;
         if (x->right != nil) {
@@ -57,7 +56,7 @@ private:
         x->right = y;
         y->parent = x;
     }
-    void insertFix(Node* z){
+    void insertFix(Node* z){// Big O(log(n)) where n is the number of nodes. The code looks through each node
         while (z->parent != nil && z->parent->color == RED) {
             if (z->parent == z->parent->parent->left) {
                 Node* y = z->parent->parent->right;
@@ -95,7 +94,7 @@ private:
         }
         root->color = BLACK;
     }
-    void deleteNode(Node* z){
+    void deleteNode(Node* z){//Big O(log(n)) where n is the number of nodes in the RB tree
         Node* y = z;
         Node* x;
         Color y_original_color = y->color;
@@ -129,7 +128,7 @@ private:
 
         delete z;
     }
-    void deleteFixup(Node* x){
+    void deleteFixup(Node* x){// Big O(log(n)) where n is the number of nodes of RB tree
         while (x != root && x->color == BLACK) {
             if (x == x->parent->left) {
                 Node* w = x->parent->right;
@@ -183,13 +182,13 @@ private:
         }
         x->color = BLACK;
     }
-    Node* minimum(Node* x) const{
+    Node* minimum(Node* x) const{//worst case - Big O(n) if all elements of the RB tree are on the left
         while (x->left != nil) {
             x = x->left;
         }
         return x;
     }
-    void transplant(Node* u, Node* v){
+    void transplant(Node* u, Node* v){//Big O(1), no recursion or loops
         if (u->parent == nil) {
             root = v;
         } else if (u == u->parent->left) {
@@ -199,7 +198,7 @@ private:
         }
         v->parent = u->parent;
     }
-    void printTree(Node* root) const{
+    void printTree(Node* root) const{// Big O(n) where n is the number of nodes in RB tree
         if (root == nil) {
             return;
         }
@@ -210,13 +209,12 @@ private:
         printTree(root->right);
         cout<<")";
     }
-
 public:
     RedBlackTree(){
         nil = new Node(0, BLACK);
         root = nil;
     }
-    void insert1(int key){
+    void insert1(int key){ // Big O(log(n)) where n is the number of nodes in the RB tree
         if (root == nil){
             root->data=key;
             root->color = BLACK;
@@ -252,7 +250,7 @@ public:
         root->color = BLACK;
 
     }
-    void insert2(int key){
+    void insert2(int key){// Big O(log(n)) where n is the number of nodes in the RB tree
         if (root == nil){
             root->data=key;
             root->color = BLACK;
@@ -288,7 +286,7 @@ public:
         root->color = BLACK;
         insertFix(z);
     }
-    void insert3(int key){
+    void insert4(int key){// Big O(log(n)) where n is the number of nodes in the RB tree
         if (root == nil){
             root->data=key;
             root->color = BLACK;
@@ -324,9 +322,86 @@ public:
         root->color = BLACK;
         insertFix(z);
     }
+    int childCounter(Node* root, int counter){
+        if (root==nil){
+            return 0;
+        }
+        if (root->left!=nil){
+            counter = childCounter(root->left,++counter);
+        }
+        if (root->right!=nil){
+            counter = childCounter(root->right,++counter);
+        }
+        return counter;
+    }
+    void printChildNumbers(Node* root){
+        if (root == nil) {
+            return;
+        }
+        cout<< root->data<< "-"<<childCounter(root, 0)<<endl;
 
+        printChildNumbers(root->left);
+        printChildNumbers(root->right);
+    }
+    int blackHeightCounter(Node* root, int counter){
+        if (root==nil){
+            return 0;
+        }
+        if (root->left!=nil&&root->left->color==BLACK){
+            counter = blackHeightCounter(root->left,++counter);
+            return counter;
+        }
+        if (root->right!=nil&&root->right->color==BLACK){
+            counter = blackHeightCounter(root->right,++counter);
+            return counter;
+        }
+        return counter;
+        //10 20 5 6 12 30 15 3 8 25 35 1 7 18
+    }
+    void blackHeights(Node* root){
+        if (root == nil) {
+            return;
+        }
+        cout<< root->data<< "-"<<blackHeightCounter(root, 0)+1<<endl;
+
+        blackHeights(root->left);
+        blackHeights(root->right);
+    }
+    int heightCounter(Node* root){
+        if (root == nil) {
+            return 0;
+        }
+        int leftHeight = heightCounter(root->left);
+        int rightHeight = heightCounter(root->right);
+        return 1 + max(leftHeight, rightHeight);
+    }
+    int search(int value){
+        Node* current = this->root;
+
+        while (current != nil) {
+            if (value == current->data) {
+                return heightCounter(current);
+            } else if (value < current->data) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+        // Value not found
+        return 0;
+    }
+    void inOrderTraversal(Node* node, int* elements, int index){
+        if (node != nil) {
+            inOrderTraversal(node->left, elements, index);
+            elements[index++] = node->data;
+            inOrderTraversal(node->right, elements, index);
+        }
+    }
     void printTree() const{
         printTree(root);
+    }
+    Node* getRoot(){
+        return this->root;
     }
 };
 
